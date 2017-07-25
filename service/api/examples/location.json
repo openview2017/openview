@@ -1,0 +1,9 @@
+{
+  "id": 2,
+  "name": "Huabei-1 HwCloud",
+  "latitude": 39.54,
+  "longitude": 116.68,
+  "selector": "region=cn-north-1,provider=hwcloud",
+  "size_limit": "2",
+  "created": "2016-10-22T10:26:32Z"
+}

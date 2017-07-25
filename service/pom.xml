@@ -1,0 +1,300 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.huawei.strategy.software.monitor</groupId>
+	<artifactId>openview-api</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<repositories>
+		<repository>
+			<id>ossrh-snapshot</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+		<repository>
+			<id>ossrh-release</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+		<repository>
+			<id>org.springframework.repository.maven</id>
+			<name>SpringSource Maven Repository</name>
+			<url>http://repository.springframework.org/maven/</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>mvnrepo</id>
+			<name>mvnrepository</name>
+			<url>https://mvnrepository.com/artifact/mysql/mysql-connector-java</url>
+		</repository>		
+		
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>ossrh-snapshot</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>ossrh-release</id>
+			<url>https://oss.sonatype.org/content/repositories/public</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<properties>
+		<!-- Dependencies Versions -->
+		<version.kikaha>2.0.4</version.kikaha>
+		<version.trip>2.1.0</version.trip>
+		<version.config>1.2.0</version.config>
+		<version.jackson>2.7.5</version.jackson>
+		<version.slf4j>1.7.13</version.slf4j>
+		<version.junit>4.12</version.junit>
+		<version.lombok>1.16.10</version.lombok>
+		<version.mysql-connector-java>5.1.6</version.mysql-connector-java>
+        <version.ormlite>5.0</version.ormlite>
+		<version.raml-tester>0.8.13</version.raml-tester>
+		<version.rest-assured>3.0.2</version.rest-assured>
+
+		<!-- Plugin's Versions -->
+		<version.maven-compiler-plugin>3.6.1</version.maven-compiler-plugin>
+		<version.maven-war-plugin>2.6</version.maven-war-plugin>
+		<version.resources.plugin>2.6</version.resources.plugin>
+		<version.source.plugin>2.3</version.source.plugin>
+		<version.javadoc.plugin>2.10.1</version.javadoc.plugin>
+		<version.surfire.plugin>2.18</version.surfire.plugin>
+		<version.gpg.plugin>1.5</version.gpg.plugin>
+		<version.nexus-staging.plugin>1.6.3</version.nexus-staging.plugin>
+		<!-- Configs -->
+		<config.webdir>${project.basedir}/src/main/webapp</config.webdir>
+		<config.skip.tests>false</config.skip.tests>
+		<config.skip.tests.unit>${config.skip.tests}</config.skip.tests.unit>
+		<config.skip.tests.integration>${config.skip.tests}</config.skip.tests.integration>
+		<config.encoding>UTF-8</config.encoding>
+		<config.encoding.source>${config.encoding}</config.encoding.source>
+		<config.encoding.resources>${config.encoding}</config.encoding.resources>
+		<project.build.sourceEncoding>${config.encoding}</project.build.sourceEncoding>
+	</properties>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>kubernetes-client</artifactId>
+			<version>2.2.9</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+
+		<!-- Test time dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Compile time dependencies -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${version.lombok}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.skullabs.trip</groupId>
+			<artifactId>trip-processor</artifactId>
+			<version>${version.trip}</version>
+		</dependency>
+
+		<!-- Kikaha -->
+		<dependency>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-db</artifactId>
+			<version>${version.kikaha}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-urouting-jackson</artifactId>
+			<version>${version.kikaha}</version>
+		</dependency>
+
+		<!-- Main project dependencies -->
+		<dependency>
+			<groupId>io.skullabs.trip</groupId>
+			<artifactId>trip-core</artifactId>
+			<version>${version.trip}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.skullabs.trip</groupId>
+			<artifactId>trip-jsr-330</artifactId>
+			<version>${version.trip}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+			<version>${version.config}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${version.slf4j}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Kafka client -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.11</artifactId>
+			<version>0.9.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.7</version>
+		</dependency>
+
+		<!-- HTTP client library -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+		<!-- json.org parser -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+		</dependency>
+
+		<!-- YAML parser -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>${version.jackson}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.17</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt -->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.3m</version>
+		</dependency>
+
+		<dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-jdbc</artifactId>
+            <version>${version.ormlite}</version>
+		</dependency>
+		
+		<!-- Mysql connector -->
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+			<version>${version.mysql-connector-java}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/net.jodah/expiringmap -->
+		<dependency>
+		    <groupId>net.jodah</groupId>
+		    <artifactId>expiringmap</artifactId>
+		    <version>0.5.7</version>
+		</dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.jayway.restassured/rest-assured -->
+        <dependency>
+			<groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+			<version>${version.rest-assured}</version>
+        </dependency>
+        <dependency>
+            <groupId>guru.nidi.raml</groupId>
+            <artifactId>raml-tester</artifactId>
+			<version>${version.raml-tester}</version>
+        </dependency>
+
+    </dependencies>
+
+
+	<build>
+		<plugins>
+			<!-- Preconfiguring kikaha maven plugin -->
+			<plugin>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>${version.kikaha}</version>
+				<artifactId>kikaha-maven-plugin</artifactId>
+				<configuration>
+					<webresourcesPath>${config.webdir}</webresourcesPath>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.maven-compiler-plugin}</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<optimize>false</optimize>
+					<debug>true</debug>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${version.maven-war-plugin}</version>
+				<configuration>
+					<!-- So maven doesn't require web.xml -->
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

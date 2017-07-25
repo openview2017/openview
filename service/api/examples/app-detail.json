@@ -1,0 +1,24 @@
+{
+  "id": 2,
+  "name": "jmeter",
+  "logo_url": "http://google.com",
+  "user_id": 1,
+  "created": "2017-02-18T10:26:32Z",
+  "status": {
+    "phase": "creating",
+    "service_count": 3,
+    "pod_count": 3,
+    "container_count": 6
+  },
+  "blueprint": {
+    "original_type": "yaml",
+    "original_content": "",
+    "edited_content": ""
+  },
+  "sla": {
+    "cost": 3000,
+    "currency_type": "yuan",
+    "latency": 20,
+    "error_rate": 20
+  }
+}

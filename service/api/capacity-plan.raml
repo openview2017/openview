@@ -1,0 +1,76 @@
+#%RAML 0.8
+title: autoshift dryrun api
+version: v1
+baseUri: http://localhost:9000/autoshift/api/v1
+mediaType: application/json
+
+schemas:
+  - capacity-plan: !include schemas/capacity-plan.json
+  - capacity-plans: !include schemas/capacity-plans.json
+  - results: !include schemas/capacity-plan-results-with-plan-status.json
+  - demand-profile: !include schemas/demand-profile.json
+  - demand-profiles: !include schemas/demand-profiles.json
+  - config: !include schemas/demand-profile-string.json
+
+resourceTypes:
+  - collection: !include resourcetypes/collection.raml
+  - collection-item: !include resourcetypes/collection-item.raml
+  - sub-item: !include resourcetypes/sub-item.raml
+
+/apps/{app_id}/demand-profiles:
+  type:
+    collection:
+      exampleCollection: !include examples/demand-profiles.json
+      exampleItem: !include examples/demand-profile-new.json
+
+  /{id}:
+    type:
+      collection-item:
+        exampleItem: !include examples/demand-profile.json
+    /config:
+      type:
+        sub-item:
+          exampleItem: !include examples/demand-profile-config.json
+      post:
+        body:
+          multipart/form-data:
+            formParameters:
+              file:
+                required: true
+                type: file
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include examples/demand-profile-config.json
+          400:
+
+/apps/{app_id}/demand-profiles/{demand_id}/capacity-plans:
+  type:
+    collection:
+      exampleCollection: !include examples/capacity-plans.json
+      exampleItem: !include examples/capacity-plan-new.json
+
+  /{id}:
+    type:
+      collection-item:
+        exampleItem: !include examples/capacity-plan.json
+    /results:
+      post:
+        body:
+          application/json:
+            schema: results
+            example: !include examples/capacity-plan-results.json
+        responses:
+          201:
+            body:
+              application/json:
+          404:
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                schema: results
+                example: !include examples/capacity-plan-results.json
+          404:

@@ -1,0 +1,40 @@
+deps:
+  api_self_endpoint: "api.openview:9000"
+  self_k8s_endpoint_id: "1"
+  capacity_planner_k8s_configfile: "/K8sConfigurations/CapacityPlanner.json"
+  kpi_sensor_k8s_configfile: "/K8sConfigurations/Nginx.json"
+  kafka_servers: "10.185.190.51:9092"
+  data_interval: "PT2S"
+  helper_node_selector:
+    stack: "openview"
+  dry_run_node_selector:
+    stack: "dryrun"
+  load_generator_node_selector:
+    stack: "openview"
+  app_node_selector:
+    stack: "app"
+
+influxdb:
+  endpoint: "influxdb.openview:8086"
+#  endpoint: "ifdb.openview.us:443"
+#  username: "openview"
+#  password: "influx4openview"
+
+server:
+  datasources:
+    default:
+ #     jdbc-url: "jdbc:mysql://openview-config-db:3306/openview"
+      jdbc-url: "jdbc:mysql://localhost:3306/openview"
+      default-auto-commit: true
+      driver-class-name: "com.mysql.jdbc.Driver"
+      username: "root"
+      password: "root"
+
+  urouting:
+    default-encoding: "UTF-8"
+    default-content-type: "application/json"
+
+  smart-routes:
+    rewrite:
+    - path: "/openview/api/v1/app/{anything}"
+      to: "/openview/api/v1/apps/{anything}"

@@ -1,0 +1,10 @@
+{
+  "id": 2,
+  "name": "open summit conference",
+  "description": "this is a description",
+  "load_duration": 300,
+  "config": "# yaml configuration file",
+  "config_json": "[{}]",
+  "config_filename": "config.yaml",
+  "created": "2011-01-12T10:26:32Z"
+}

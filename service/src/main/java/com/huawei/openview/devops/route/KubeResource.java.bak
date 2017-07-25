@@ -1,0 +1,333 @@
+package com.huawei.openview.devops.route;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
+import com.huawei.openview.devops.domain.admin.K8sEndpoint;
+import com.huawei.openview.devops.service.admin.K8sEndpointService;
+import com.huawei.openview.devops.util.YamlMapGetter;
+import kikaha.urouting.api.DefaultResponse;
+import kikaha.urouting.api.Produces;
+import kikaha.urouting.api.Response;
+import lombok.extern.slf4j.Slf4j;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Authenticator;
+import okhttp3.CertificatePinner;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Authenticator;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
+import okhttp3.Credentials;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+/**
+ * @author Bowen Zhang
+ */
+@Slf4j
+@Singleton
+public class KubeResource {
+
+    @Inject
+    private K8sEndpointService k8sEndpointService;
+
+    private ExpiringMap<Long, K8sEndpoint> cache = ExpiringMap.builder().variableExpiration().build();
+
+    private ReentrantReadWriteLock httpLock = new ReentrantReadWriteLock();
+    private OkHttpClient client = new OkHttpClient();
+
+    protected ArrayList<Object> getContainersFromKubeConfig(Object data, String[] fields) {
+        try {
+            YamlMapGetter currentMap = new YamlMapGetter(data);
+            for (int i = 0; i < fields.length-1; i++) {
+                try {
+                    currentMap = currentMap.gets(fields[i]);
+                } catch (NullPointerException e) {//ignore field not found
+                }
+            }
+            ArrayList<Object> containers = (ArrayList<Object>) currentMap.get(fields[fields.length - 1]);
+            return containers;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public okhttp3.Response callKubeMaster(K8sEndpoint k8s, String path, String method, String format, String body) {
+        log.debug("callKubeMaster - enter ...");
+        log.debug("  Parameter : k8s = " + k8s);
+        log.debug("  Parameter : path = " + path);
+        log.debug("  Parameter : method = " + method);
+        log.debug("  Parameter : format = " + format);
+        log.debug("  Parameter : body = " + body);
+
+        RequestBody requestBody = null;
+        if ( null != body ) {
+            requestBody = RequestBody.create(MediaType.parse("application/"+format), body);
+            log.debug("  requestBody = " + requestBody);
+        }
+        String endpoint = k8s.getEndpoint();
+        String url = null;
+        if ((endpoint != null) && endpoint.endsWith("/")) {
+            url = endpoint + path;
+        }else{
+            url = endpoint + "/" + path;
+        }
+        Request request = new Request.Builder().url(url).method(method, requestBody).build();
+        log.debug("  request = " + request);
+        try {
+            httpLock.writeLock().lock();
+            client = new OkHttpClient.Builder()
+                    .authenticator(new Authenticator() {
+                        @Override public Request authenticate(Route route, Response response) throws IOException {
+                            if (response.request().header("Authorization") != null) {
+                                return null; // Give up, we've already attempted to authenticate.
+                            }
+
+                            System.out.println("Authenticating for response: " + response);
+                            System.out.println("Challenges: " + response.challenges());
+                            String credential = Credentials.basic("jesse", "password1");
+                            return response.request().newBuilder()
+                                    .header("Authorization", credential)
+                                    .build();
+                        }
+                    })
+                    .build();
+
+            return client.newCall(request).execute();
+        } catch (IOException e) {
+            log.error("callKubeMaster : " + e);
+            e.printStackTrace();
+            return null;
+        } finally {
+            httpLock.writeLock().unlock();
+            log.debug("callKubeMaster - exit ...");
+        }
+    }
+
+    private K8sEndpoint getK8sEndpoint(Long app_id, int minutes) {
+        log.debug("getK8sEndpoint - enter ...");
+        K8sEndpoint k8sEndpoint = null;
+        if (!cache.containsKey(app_id)) {
+            try {
+                k8sEndpoint = k8sEndpointService.findK8sEndpointByAppId(app_id);
+            }catch (SQLException e) {
+                // no result
+            }
+            if (null != k8sEndpoint) {
+                cache.put(app_id, k8sEndpoint, ExpirationPolicy.CREATED, minutes, TimeUnit.MINUTES);
+                log.debug("create/renew cache, key=" + app_id);
+            }
+            else {
+                return null;
+            }
+        } else {
+            k8sEndpoint = cache.get(app_id);
+        }
+        log.debug("getK8sEndpoint - exit ...");
+        return k8sEndpoint;
+    }
+
+    public Response getNumberOfRunningPods(Long app_id, String name) {
+        log.debug("getNumberOfRunningPods - enter ...");
+        log.debug("  Parameter : app_id = " + app_id);
+        log.debug("  Parameter : name = " + name);
+
+        K8sEndpoint k8sEndpoint = getK8sEndpoint(app_id, 15);
+        log.debug("  k8sEndpoint = " + k8sEndpoint);
+        if (null == k8sEndpoint) {
+            log.debug("getNumberOfRunningPods - exit ...");
+            return DefaultResponse.serverError("Unable to find k8s master settings by app_id=" + app_id.toString());
+        }
+        okhttp3.Response response = callKubeMaster(k8sEndpoint, "api/v1/namespaces/" + name + "/pods", "GET", null, null);
+        ObjectMapper jsonMapper = new ObjectMapper();
+        Integer num_ready_pods = 0;
+        Boolean are_all_pods_ready = true;
+        try {
+            Iterator<JsonNode> k8s_res = jsonMapper.readTree(response.body().string()).get("items").elements();
+            while (k8s_res.hasNext()) {
+                JsonNode pod_configs = k8s_res.next();
+                JsonNode pod_status = pod_configs.get("status");
+                String pod_phase = pod_status.get("phase").asText();
+                // if the pod belongs to a job and the job is finished, the pod_phase will be "succeeded"
+                if (pod_phase.equals("Succeeded")) {
+                    log.debug(pod_configs.get("metadata").get("name").asText() + " phase: Succeeded");
+                    continue;
+                }
+                // if the pod belongs to a job and the job is failed, the pod_phase will be "failed"
+                if (pod_phase.equals("Failed")) {
+                    log.debug(pod_configs.get("metadata").get("name").asText() + " phase: Failed");
+                    are_all_pods_ready = false;
+                    continue;
+                }
+                // for a pod in rc or stateful-set, only "Ready"=true means it is ready. "Running" just means a start
+                if (!pod_phase.equals("Running")) {
+                    log.error("Unknown pod phase, check if https://kubernetes.io/docs/user-guide/pod-states/ is updated.", pod_phase);
+                }
+                Iterator<JsonNode> pod_condition = pod_status.get("conditions").elements();
+                while (pod_condition.hasNext()) {
+                    JsonNode condition = pod_condition.next();
+                    if (condition.get("type").asText().equals("Ready")) {
+                        log.debug(pod_configs.get("metadata").get("name").asText() + " " + condition.get("type").asText()
+                                + ": " + condition.get("status").asText());
+                        if (condition.get("status").asText().equals("True")) {
+                            num_ready_pods += 1;
+                        } else {
+                            are_all_pods_ready = false;
+                        }
+                    }
+                }
+            }
+            if (num_ready_pods == 0) {
+                are_all_pods_ready = false;
+            }
+            log.debug("getNumberOfRunningPods - exit ...");
+            return DefaultResponse
+                    .ok("{\"count\":" + num_ready_pods + ", \"isready\":" + (are_all_pods_ready) + "}")
+                    .header("Access-Control-Allow-Origin", "*");
+        } catch (IOException | IllegalStateException | NullPointerException e) {
+            log.error(e.getMessage());
+            log.debug("getNumberOfRunningPods - exit ...");
+            return DefaultResponse.serverError("{\"count\": -1, \"isready\": false}")
+                    .header("Access-Control-Allow-Origin", "*");
+        }
+    }
+
+    public Response removeNamespace(Long app_id, String name) {
+        log.debug("removeNamespace - enter ...");
+        log.debug("  Param : app_id = " + app_id);
+        log.debug("  Param : name = " + name);
+        // ----------- b. get the user id
+        K8sEndpoint k8sEndpoint = getK8sEndpoint(app_id, 15);
+        log.debug("removeNamespace : k8sEndpoint = " + k8sEndpoint);
+        if (null == k8sEndpoint) {
+            log.debug("removeNamespace - exit ...");
+            return DefaultResponse.response().statusCode(503)
+                    .entity("Unable to find k8s master settings by app_id=" + app_id.toString());
+        }
+        okhttp3.Response response = callKubeMaster(k8sEndpoint, "api/v1/namespaces/" + name, "DELETE", null, null);
+        log.debug("removeNamespace : response = " + response);
+        if (null == response) {
+            log.debug("removeNamespace - exit ...");
+            return DefaultResponse.serverError("Failed to send delete request to Kube master.");
+        } else {
+            cache.remove(app_id);
+            log.debug("removeNamespace - exit ...");
+            return DefaultResponse.ok(response);
+        }
+    }
+
+    @Produces("application/json")
+    public Response deployK8sYamlConfig(Long app_id, String nsName, LinkedList<Object> k8s_yaml_config) {
+        log.debug("deployK8sYamlConfig - enter ...");
+        log.debug("  Parameter : app_id = "+app_id);
+        log.debug("  Parameter : nsName = " + nsName);
+        log.debug("  Parameter : k8s_yaml_config = " + k8s_yaml_config);
+
+        // ----------- a. get k8sConfig
+        K8sEndpoint k8sEndpoint = getK8sEndpoint(app_id, 15);
+        if (null == k8sEndpoint) {
+            return DefaultResponse.serverError("Unable to find k8s master settings by app_id=" + app_id.toString());
+        }
+        // ----------- b. create a namespace
+        okhttp3.Response response = callKubeMaster(k8sEndpoint, "api/v1/namespaces", "POST", "yaml",
+                "metadata: {name: \"" + nsName + "\"}");
+        if (null == response) {
+            return DefaultResponse
+                    .serverError("Failed to send \"create namespace" + nsName + "\" request to Kube master.");
+        }
+        Yaml yaml = new Yaml();
+        // // ----------- c. create a secret under the namespace
+        // // FIXME: check if user config file has already included a secret
+        // String repo_secret = appService.loadSecretByAppId(1L);
+        // if (!repo_secret.isEmpty()) {
+        // response = callKubeMaster(k8sEndpoint, "namespaces/" + namespaceName
+        // + "/secrets", "POST", "kind: Secret\nmetadata: {name:
+        // myregistry}\ndata: {.dokcercfg: " + repo_secret + "}\ntype:
+        // kubernetes.io/hwdockercfg");
+        // if (null == response) {
+        // return DefaultResponse.serverError("Failed to send \"create
+        // namespace" + namespaceName + "\" request to Kube master.");
+        // }
+        // }
+        // ----------- d. deploy
+        LinkedHashMap< String, LinkedHashMap<String, String> > responseMsg = new LinkedHashMap<>();
+        LinkedHashMap<String, String> status_summary = new LinkedHashMap<>();
+        Integer n_created = 0;
+        for (Object oneConfig: k8s_yaml_config) {
+            try {
+                LinkedHashMap<String, Object> oneConfig_hashmap = (LinkedHashMap<String, Object>) oneConfig;
+                String type = (String) (oneConfig_hashmap).get("kind");
+                LinkedHashMap<String, Object> metadata = (LinkedHashMap<String, Object>) oneConfig_hashmap.get("metadata");
+                if (null == metadata) {
+                    metadata = new LinkedHashMap<>();
+                    metadata.put("namespace", nsName);
+                    oneConfig_hashmap.put("metadata", metadata);
+                } else {
+                    metadata.put("namespace", nsName);
+                }
+                String segmentName = (String) metadata.get("name");
+
+                String path = null;
+                if("replicationcontroller".equalsIgnoreCase(type)) {
+                    path = "api/v1/namespaces/" + nsName + "/" + type.toLowerCase() + "s";
+                } else if ("statefulset".equalsIgnoreCase(type)) {
+                    path = "apis/apps/v1beta1/namespaces/" + nsName + "/" + type.toLowerCase() + "s";
+                } else if ("deployment".equalsIgnoreCase(type)) {
+                    path = "apis/extensions/v1beta1/namespaces/" + nsName + "/" + type.toLowerCase() + "s";
+                } else if ("job".equalsIgnoreCase(type)) {
+                    path = "apis/batch/v1/namespaces/" + nsName + "/" + type.toLowerCase() + "s";
+                } else{ // default value
+                    path = "api/v1/namespaces/" + nsName + "/" + type.toLowerCase() + "s";
+                }
+                response = callKubeMaster(k8sEndpoint, path, "POST", "yaml", yaml.dump(oneConfig));
+
+                LinkedHashMap<String, String> responseMsg_oneDoc = new LinkedHashMap<>();
+                responseMsg_oneDoc.put("type",type);
+			    if (null == response) {
+                    return DefaultResponse.response().statusCode(503)
+                            .entity("Unable to connect with the Kubernetes master at " + k8sEndpoint.getEndpoint());
+                } else if (201 != response.code()) {  // if the Kubernetes master do not say "created", it means the config file is not acceptable. This server returns the previous successful deployment along with this failure deployment
+                    responseMsg_oneDoc.put("status",response.message());
+                    responseMsg.put(segmentName, responseMsg_oneDoc);
+                    removeNamespace(app_id, nsName);
+                    status_summary.put("n_created", n_created.toString());
+                    Integer n_not_deployed = k8s_yaml_config.size()-n_created;
+                    status_summary.put("n_not_deployed", n_not_deployed.toString());
+                    status_summary.put("note", "The entire app has been removed already due to an invalid config file.");
+                    status_summary.put("status", "invalid config -> deleted");
+                    responseMsg.put("status_summary", status_summary);
+                    return DefaultResponse.response().statusCode(response.code())
+                            .entity(responseMsg);
+                } else {
+                    responseMsg_oneDoc.put("status",response.message());
+                    responseMsg.put(segmentName, responseMsg_oneDoc);
+                }
+            } catch (ClassCastException e) {
+                return DefaultResponse.preconditionFailed()
+                        .entity("The Kubernetes yaml config file does not include \"kind\". Invalid config.");
+            }
+            n_created += 1;
+        }
+        status_summary.put("n_created", n_created.toString());
+        status_summary.put("status", "created");
+        responseMsg.put("status_summary", status_summary);
+        log.debug("deployK8sYamlConfig - exit ...");
+        return DefaultResponse.ok(responseMsg).header("Access-Control-Allow-Origin", "*");
+    }
+}

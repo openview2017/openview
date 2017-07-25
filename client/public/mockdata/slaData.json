@@ -1,0 +1,8 @@
+{
+	"id": 1,
+	"app_id": 1,
+	"max_error_rate": 22,
+	"target_latency": 33,
+	"budget_per_month": 1233,
+	"currency_type": "dollar"
+}

@@ -1,0 +1,40 @@
+deps:
+  api_self_endpoint: "api.autoshift:9000"
+  self_k8s_endpoint_id: "1"
+  capacity_planner_k8s_configfile: "/K8sConfigurations/CapacityPlanner.json"
+  kpi_sensor_k8s_configfile: "/K8sConfigurations/Nginx.json"
+  kafka_servers: "10.185.190.51:9092"
+  data_interval: "PT2S"
+  helper_node_selector:
+    stack: "autoshift"
+  dry_run_node_selector:
+    stack: "dryrun"
+  load_generator_node_selector:
+    stack: "autoshift"
+  app_node_selector:
+    stack: "app"
+
+influxdb:
+  endpoint: "influxdb.autoshift:8086"
+#  endpoint: "ifdb.autoshift.us:443"
+#  username: "autoshift"
+#  password: "influx4autoshift"
+
+server:
+  datasources:
+    default:
+ #     jdbc-url: "jdbc:mysql://autoshift-config-db:3306/autoshift"
+      jdbc-url: "jdbc:mysql://localhost:3306/autoshift"
+      default-auto-commit: true
+      driver-class-name: "com.mysql.jdbc.Driver"
+      username: "root"
+      password: "root"
+
+  urouting:
+    default-encoding: "UTF-8"
+    default-content-type: "application/json"
+
+  smart-routes:
+    rewrite:
+    - path: "/autoshift/api/v1/app/{anything}"
+      to: "/autoshift/api/v1/apps/{anything}"

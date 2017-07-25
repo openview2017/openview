@@ -1,0 +1,251 @@
+.block .close {
+	background: rgba(0, 0, 0, 0) url("../images/bg-close.png") no-repeat scroll 0 0;
+	display: none;
+	float: left;
+	height: 10px;
+	margin: 16px 4px 0 16px;
+	overflow: hidden;
+	position: absolute;
+	text-indent: 9999px;
+	width: 10px;
+}
+.block .close:hover {
+	opacity: 0.5;
+}
+.block:hover .close {
+	display: block;
+}
+
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1000; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+	position: relative;
+	background-color: #414550;
+	margin: auto;
+	padding: 0;
+	width: 400px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	-webkit-animation-name: animatetop;
+	-webkit-animation-duration: 0.4s;
+	animation-name: animatetop;
+	animation-duration: 0.4s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+from {
+	top: -300px;
+	opacity: 0
+}
+to {
+	top: 0;
+	opacity: 1
+}
+}
+
+@keyframes
+animatetop {from {
+	top: -300px;
+	opacity: 0
+}
+to {
+	top: 0;
+	opacity: 1
+}
+}
+
+/* The Close Button */
+.close {
+	background: rgba(0, 0, 0, 0) url("../images/bg-close.png") no-repeat scroll 0 0;
+	float: right;
+	height: 10px;
+	margin: 4px 4px 0 8px;
+	overflow: hidden;
+	position: static;
+	text-indent: 9999px;
+	width: 10px;
+}
+
+.close:hover, .close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.modal-header {
+	padding: 16px;
+	background-color: #3c3e42;
+	color: white;
+}
+.modal-header strong.title {
+	color: #e9e9ea;
+	display: block;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 17px;
+	overflow: hidden;
+	text-transform: capitalize;
+}
+
+.modal-body {
+	padding: 25px 16px;
+}
+
+.modal-footer {
+	padding: 10px 0 10px 14px;
+	background-color: #3c3e42;
+	color: white;
+}
+.modal-footer .btn-default {
+	color: #e9e9ea;
+	font-size: 10px;
+	line-height: 15px;
+	/*margin: 0 4px 4px;*/
+	min-width: 65px;
+	padding: 4px 9px;
+}
+.modal-footer .btn-default:hover {
+	color: #000000;
+}
+
+.block span.incomplete, .block span.launching {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	border: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-ms-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	background-image: -webkit-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: -moz-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: -ms-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	-webkit-background-size: 50px 50px;
+	-moz-background-size: 50px 50px;
+	-ms-background-size: 50px 50px;
+	background-size: 50px 50px;
+	overflow: hidden;
+}
+
+.block span.launching {
+	-webkit-animation: move 2s linear infinite;
+	-moz-animation: move 2s linear infinite;
+	-ms-animation: move 2s linear infinite;
+	animation: move 2s linear infinite;
+}
+
+/*
+ Animate the stripes
+ */
+@-webkit-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@-moz-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@-ms-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+
+.select-file input[type="file"] {
+    display: none;
+}
+.select-file .import-yaml-file {
+    background: #414550 none repeat scroll 0 0;
+    border: 1px solid #a6a7a9;
+    border-radius: 3px;
+    color: #e9e9ea;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    height: 32px;
+    line-height: 15px;
+    overflow: hidden;
+    padding: 7px 8px;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 227px;
+    margin: 0 0 10px -1px;
+}
+
+.select-file .import-yaml-file:hover {
+	 background: rgba(255, 255, 255, 0.2);
+}

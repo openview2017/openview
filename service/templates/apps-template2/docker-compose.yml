@@ -1,0 +1,107 @@
+# the apps stack
+db:
+  restart: always
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.service.name=$${service_name}
+    io.rancher.container.pull_image: always
+  image: autoshift/apps_mysql
+  ports:
+    - 3306:3306
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+  volumes:
+    - /var/lib/mysql:/var/lib/mysql
+  mem_limit: 2000000000
+  memswap_limit: 2000000000
+
+
+acmeair:
+  restart: always
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: always
+  image: autoshift/apps_acmeair
+  links:
+    - db
+  mem_limit: 1000000000
+  memswap_limit: 1000000000
+  #cpu-period: 100000
+  #cpu-quota: 20000
+
+nginx:
+  restart: always
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: always
+  image: autoshift/nginx-log-parser:master
+  links:
+    - acmeair:app
+  external_links:
+    - devops/influxdb:influxdb
+    - devops/kafka:kafka
+  environment:
+    - APP_NAME=APP-NAME-PLACEHOLDER
+  ports:
+    - 80:80
+  mem_limit: 256000000
+  memswap_limit: 256000000
+
+
+telegraf:
+  restart: always
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: always
+  image: autoshift/devops_telegraf:apps-0.12
+  links:
+    - nginx
+    - db
+  external_links:
+    - devops/kafka:kafka
+    - devops/influxdb:influxdb
+  environment:
+    HOST_PROC: /rootfs/proc
+    HOST_SYS: /rootfs/sys
+  volumes:
+    - "/sys:/rootfs/sys:ro"
+    - "/proc:/rootfs/proc:ro"
+    - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  mem_limit: 256000000
+  memswap_limit: 256000000
+
+
+FeatureSelection:
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=ml,stage=production
+    io.rancher.container.hostname_override: container_name
+    io.rancher.container.pull_image: always
+  image: autoshift/autoshift-spark:featureSel
+  environment:
+    - topic=TOPIC-PLACEHOLDER
+  links:
+    - nginx
+  external_links:
+    - devops/kafka:kafka
+
+
+jmeter:
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/nginx
+    io.rancher.container.pull_image: always
+  image: "autoshift/jmeter-simple:0.1"
+  links:
+    - nginx
+  mem_limit: 256000000
+  memswap_limit: 256000000

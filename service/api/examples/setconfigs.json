@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "kind": "StatefulSet",
+    "name": "mysql",
+    "replicas": 3,
+    "podConfig": {
+      "containersConfig": {
+        "mysql": {
+          "cpu_quota": 1000000,
+          "mem_limit": 1073741824
+        }
+      }
+    }
+  },
+  {
+    "id": 2,
+    "kind": "ReplicationController",
+    "name": "webrc",
+    "replicas": 1,
+    "podConfig": {
+      "containersConfig": {
+        "web": {
+          "cpu_quota": 1000000,
+          "mem_limit": 1073741824
+        }
+      }
+    }
+  },
+  {
+    "id": 3,
+    "kind": "ReplicationController",
+    "name": "nginxrc",
+    "replicas": 1,
+    "podConfig": {
+      "containersConfig": {
+        "nginx": {
+          "cpu_quota": 500000,
+          "mem_limit": 536870912,
+          "cpu_request": 500000,
+          "mem_request": 536870912
+        }
+      }
+    }
+  }
+]

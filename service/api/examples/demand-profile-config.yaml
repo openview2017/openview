@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: jmeter
+spec:
+  replicas: 1
+  selector:
+    name: jmeter
+  template:
+    metadata:
+      labels:
+        name: jmeter
+    spec:
+      imagePullSecrets:
+      - name: "myregistry"
+      restartPolicy: Always
+      containers:
+      - name: jmeter
+        image: 117.78.33.214/autoshift/jmeter:vmall
+        imagePullPolicy: Always

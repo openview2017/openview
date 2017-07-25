@@ -1,0 +1,440 @@
+.block .close {
+	background: rgba(0, 0, 0, 0) url("../../../themes/openview/images/bg-close.png") no-repeat scroll 0 0;
+	display: none;
+	float: left;
+	height: 10px;
+	margin: 16px 4px 0 16px;
+	overflow: hidden;
+	position: absolute;
+	text-indent: 9999px;
+	width: 10px;
+}
+.block .close:hover {
+	opacity: 0.5;
+}
+.block:hover .close {
+	display: block;
+}
+
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1000; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+	position: relative;
+	background-color: #414550;
+	margin: auto;
+	padding: 0;
+	width: 400px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	-webkit-animation-name: animatetop;
+	-webkit-animation-duration: 0.4s;
+	animation-name: animatetop;
+	animation-duration: 0.4s
+}
+
+.modal-content.fullscreen {
+	width: 100%;
+	height: 100%;
+}
+
+#update-config-modal .modal-body p, #update-config-modal .modal-body input[type="text"] {
+	color: #e9e9e9;
+}
+
+#update-config-modal .modal-body p {
+	font-size: 0.9em;
+	font-family: sans-serif;
+}
+
+#edit-code-modal{
+	padding-top: 60px !important;
+}
+
+#edit-code-modal .modal-footer{
+	position: fixed !important;
+	width: 100% !important;
+	bottom: 0 !important;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+from {
+	top: -300px;
+	opacity: 0
+}
+to {
+	top: 0;
+	opacity: 1
+}
+}
+
+@keyframes
+animatetop {from {
+	top: -300px;
+	opacity: 0
+}
+to {
+	top: 0;
+	opacity: 1
+}
+}
+
+/* The Close Button */
+.close {
+	background: rgba(0, 0, 0, 0) url("../../../themes/openview/images/bg-close.png") no-repeat scroll 0 0;
+	float: right;
+	height: 10px;
+	margin: 4px 4px 0 8px;
+	overflow: hidden;
+	position: static;
+	text-indent: 9999px;
+	width: 10px;
+}
+
+.close:hover, .close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.modal-header {
+	padding: 16px;
+	background-color: #3c3e42;
+	color: white;
+}
+.modal-header strong.title {
+	color: #e9e9ea;
+	display: block;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 17px;
+	overflow: hidden;
+	text-transform: capitalize;
+}
+
+.modal-body {
+	padding: 25px 16px;
+}
+
+.modal-footer {
+	padding: 10px 0 10px 14px;
+	background-color: #3c3e42;
+	color: white;
+}
+.modal-footer .btn-default {
+	color: #e9e9ea;
+	font-size: 10px;
+	line-height: 15px;
+	/*margin: 0 4px 4px;*/
+	min-width: 65px;
+	padding: 4px 9px;
+}
+.modal-footer .btn-default:hover {
+	color: #000000;
+}
+
+.block span.incomplete, .block span.deleting, .block span.launching {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	border: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-ms-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	background-image: -webkit-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: -moz-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: -ms-linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	background-image: linear-gradient(
+	-45deg,
+	#4B4E59 25%,
+	transparent 25%,
+	transparent 50%,
+	#4B4E59 50%,
+	#4B4E59 75%,
+	transparent 75%,
+	transparent
+	);
+	-webkit-background-size: 50px 50px;
+	-moz-background-size: 50px 50px;
+	-ms-background-size: 50px 50px;
+	background-size: 50px 50px;
+	overflow: hidden;
+}
+
+.block span.launching, .block span.launching, .block span.launching, .block span.deleting {
+	-webkit-animation: move 2s linear infinite;
+	-moz-animation: move 2s linear infinite;
+	-ms-animation: move 2s linear infinite;
+	animation: move 2s linear infinite;
+}
+
+/*
+ Animate the stripes
+ */
+@-webkit-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@-moz-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@-ms-keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+@keyframes move{
+0% {
+background-position: 0 0;
+}
+100% {
+background-position: 50px 50px;
+}
+}
+
+.select-file input[type="file"] {
+    display: none;
+}
+.select-file .import-yaml-file {
+    background: #414550 none repeat scroll 0 0;
+    border: 1px solid #a6a7a9;
+    border-radius: 3px;
+    color: #e9e9ea;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    height: 32px;
+    line-height: 15px;
+    overflow: hidden;
+    padding: 7px 8px;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 227px;
+    margin: 0 0 10px -1px;
+}
+
+.select-file .import-yaml-file:hover {
+	 background: rgba(255, 255, 255, 0.2);
+}
+input[type=text]#app_name {
+	width: 166px;
+	height: 32px;
+	background: none;
+	border: 1px solid #a6a7a9;
+	border-radius: 2px;
+	padding: 5px;
+	color: #a6a7a9;
+	font-size: 14px;
+	line-height: 17px;
+	margin: 0 7px 0 0;
+}
+.validation-file {
+    padding-top: 30px;
+    height: 200px;
+    position: relative;
+}
+.validation-file .validation-status {
+    color: #e9e9ea;
+    display: inline-block;
+    font-size: 12px;
+    height: 32px;
+    line-height: 15px;
+    overflow: hidden;
+    padding: 7px 8px;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 70%;
+    text-align: center;
+    margin: 0 0 0 -35%;
+    position: absolute;
+    left: 50%;
+}
+.validation-file .btn-form {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    width: 30%;
+    margin: 0 0 0 -15%;
+}
+.validation-file .btn-form.tryagain {
+    margin-left: -31%;
+    margin-right: 1%;
+}
+.validation-file .btn-form.fixerror {
+    margin-left: 1%;
+}
+.validation-file .btn-form.tryagain.one-button {
+    margin-left: -15%;
+}
+.validation-file .btn-form.fixerror.one-button {
+    display: none;
+}
+.validation-file .validation-status.validating, .validation-file .validation-status.valid, .validation-file .validation-status.invalid {
+    background-size: 38px;
+    height: 38px;
+    width: 12%;
+    position: absolute;
+    margin: 0 0 0 -6%;
+    left: 50%;
+    bottom: 78px;
+}
+.validation-file .validation-status.valid {
+    background-image: url(/themes/openview/images/validation/Valid.png);
+}
+.validation-file .validation-status.invalid {
+    background-image: url(/themes/openview/images/validation/Invalid.png);
+}
+.validation-file .validation-status.validating {
+    background-image: url(/themes/openview/images/validation/Spinner.png);
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 4000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 4000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+@-ms-keyframes spin {
+    from { -ms-transform: rotate(0deg); }
+    to { -ms-transform: rotate(360deg); }
+}
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+.validate-row .entry-point-list {
+    width: 180px;
+    height: 30px;
+    float: left;
+    font-size: 12px;
+    background-color: #32353e;
+    border-radius: 2px;
+    border: 1px solid #a6a7a9;
+    padding-left: 5px;
+    color: rgb(233,233,234);
+    outline:0px;
+}
+.validate-row .entry-point-list:focus {
+    outline: none;
+}
+.validate-row button.gototopology {
+    float: right;
+}
+#content .add2 .bottom-text.home {
+	display: flex !important;
+	display: -webkit-flex !important;
+	padding: 0 !important;
+}
+#content .add2 .bottom-text span.home {
+	flex-grow: 1;
+	-webkit-flex-grow: 1;
+	width: inherit;
+}
+#content .add2 .bottom-text span.home::before {
+	content: "";
+	background-size: 20px 20px;
+	width: 20px;
+	height: 20px
+}
+#content .add2 .bottom-text span.stack.home::before {
+	background-image: url(/themes/openview/images/networkicons/service.png);
+}
+#content .add2 .bottom-text span.pod.home::before {
+	background-image: url(/themes/openview/images/networkicons/pod.png);
+}
+#content .add2 .bottom-text span.container.home::before {
+	background-image: url(/themes/openview/images/networkicons/container.png);
+}
+#content .add2 .bottom-text span.alerts.home::before {
+	content: "\E900";
+}
+#content .add2 .text-detail h1 {
+	font-size: 2.7em;
+	display: inline-table;
+	margin-bottom: 20px;
+	font-family: sans-serif;
+}
+#addNewApp .slide.app-name .validate-row .rc-select,
+#addNewApp .slide.app-name .validate-row .rc-select-selection--single,
+#addNewApp .slide.app-name .validate-row .rc-select-selection__rendered {
+    height: 30px;
+    line-height: 30px;
+}

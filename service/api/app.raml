@@ -1,0 +1,81 @@
+#%RAML 0.8
+title: autoshift app api
+version: v1
+baseUri: http://localhost:9000/autoshift/api/v1
+mediaType: application/json
+
+schemas:
+  - app: !include schemas/app.json
+  - apps: !include schemas/apps.json
+  - sla: !include schemas/appsla.json
+  - status: !include schemas/appstatus.json
+  - blueprint: !include schemas/blueprint.json
+  - original_content: !include schemas/blueprint-string.json
+  - edited_content: !include schemas/blueprint-string.json
+  - entry_point: !include schemas/blueprint-string.json
+  - current-setconfigs: !include schemas/setconfigs.json
+
+resourceTypes:
+  - collection: !include resourcetypes/collection.raml
+  - collection-item: !include resourcetypes/collection-item.raml
+  - sub-item: !include resourcetypes/sub-item.raml
+  - readonly-sub-item: !include resourcetypes/readonly-sub-item.raml
+
+/apps:
+  type:
+    collection:
+      exampleCollection: !include examples/apps.json
+      exampleItem: !include examples/app-new.json
+  /{id}:
+    type:
+      collection-item:
+        exampleItem: !include examples/app.json
+    get:
+      queryParameters:
+        detail:
+          type: boolean
+          required: false
+          default: false
+    /blueprint:
+      type:
+        sub-item:
+          exampleItem: !include examples/blueprint.json
+      /original_content:
+        type:
+          sub-item:
+            exampleItem : !include examples/blueprint-original-yaml.json
+        post:
+          body:
+            multipart/form-data:
+              formParameters:
+                file:
+                  required: true
+                  type: file
+                filename:
+                  type: string
+          responses:
+            200:
+              body:
+                application/json:
+                  example: !include examples/blueprint-original-yaml.json
+            400:
+      /edited_content:
+        type:
+          sub-item:
+            exampleItem : !include examples/blueprint-edited.json
+      /entry_point:
+        type:
+          sub-item:
+            exampleItem: !include examples/blueprint-entrypoint.json
+    /sla:
+      type:
+        sub-item:
+          exampleItem : !include examples/appsla.json
+    /status:
+      type:
+        sub-item:
+          exampleItem : !include examples/appstatus.json
+    /current-setconfigs:
+      type:
+         readonly-sub-item:
+           exampleItem: !include examples/setconfigs.json

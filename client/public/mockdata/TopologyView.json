@@ -1,0 +1,220 @@
+{
+  "app_name": "acmeair",
+  "app_id": 1,
+  "deployment_plan_id": 1,
+  "manual_dryrun": false,
+  "load_timespan": 300,
+  "node_location_idx": 1,
+  "node_location_idx_candidates": [
+    1,
+    2,
+    3
+  ],
+  "result_summary": {
+    "latency": 120,
+    "error_rate": 0.01,
+    "cost_per_month": 120
+  },
+  "app_sla": {
+
+  },
+  "currency_type": "dollar",
+  "SetConfigs": [
+    {
+      "name": "my-registry",
+      "id": 0,
+      "kind": "secret"
+    },
+    {
+      "name": "mysql-set",
+      "id": 1,
+      "kind": "StatefulSet",
+      "scale": 1,
+      "scale_candidates": [
+        2,
+        3,
+        4
+      ],
+      "podConfig": {
+        "node_location_idx": 1,
+        "node_location_idx_candidates": [
+          1,
+          2,
+          3
+        ],
+        "containersConfig": {
+          "mysql": {
+            "mem_limit": 2048000000,
+            "mem_limit_candidates": [
+              1024000000,
+              2048000000,
+              3056000000,
+              4096000000
+            ],
+            "cpu_quota": 100000,
+            "cpu_quota_candidates": [
+              50000,
+              100000,
+              200000
+            ]
+          },
+          "mysql-forwarder": {
+            "mem_limit": 512000000,
+            "mem_limit_candidates": [
+              1024000000,
+              2048000000,
+              3056000000,
+              4096000000
+            ],
+            "cpu_quota": 100000,
+            "cpu_quota_candidates": [
+              50000,
+              100000,
+              200000
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "nginx",
+      "id": 2,
+      "kind": "Deployment",
+      "scale": 1,
+      "scale_candidates": [
+        1
+      ],
+      "podConfig": {
+        "node_location_idx": 1,
+        "node_location_idx_candidates": [
+          1,
+          2,
+          3
+        ],
+        "containersConfig": {
+          "nginx1": {
+            "mem_limit": 1024000000,
+            "mem_limit_candidates": [
+              512000000,
+              1024000000,
+              2048000000
+            ],
+            "cpu_quota": 100000,
+            "cpu_quota_candidates": [
+              50000,
+              100000,
+              200000
+            ]
+          },
+          "nginx2": {
+            "mem_limit": 2048000000,
+            "mem_limit_candidates": [
+              512000000,
+              1024000000,
+              2048000000
+            ],
+            "cpu_quota": 250000,
+            "cpu_quota_candidates": [
+              50000,
+              100000,
+              200000
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "web",
+      "id": 3,
+      "kind": "Deployment",
+      "scale": 2,
+      "scale_candidates": [
+        1,
+        2,
+        3
+      ],
+      "podConfig": {
+        "node_location_idx": 1,
+        "node_location_idx_candidates": [
+          1,
+          2,
+          3
+        ],
+        "containersConfig": {
+          "web": {
+            "mem_limit": 1024000000,
+            "mem_limit_candidates": [
+              768000000,
+              1024000000,
+              1536000000,
+              2048000000
+            ],
+            "cpu_quota": 100000,
+            "cpu_quota_candidates": [
+              50000,
+              100000,
+              200000,
+              300000
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "db-loader",
+      "id": 4,
+      "kind": "Job",
+      "entry_point": false
+    },
+    {
+      "name": "nginx-svc",
+      "id": 5,
+      "kind": "Service",
+      "NodePorts": [
+        30880,
+        30888
+      ],
+      "targets": [
+        {
+          "reference_id": 2
+        }
+      ],
+      "entry_point": true
+    },
+    {
+      "name": "web-svc",
+      "id": 6,
+      "kind": "Service",
+      "NodePorts": [
+        36379,
+        36380
+      ],
+      "targets": [
+        {
+          "reference_id": 3
+        }
+      ],
+      "entry_point": false
+    },
+    {
+      "name": "db-svc",
+      "id": 7,
+      "kind": "Service",
+      "NodePorts": [
+        36306
+      ],
+      "targets": [
+        {
+          "reference_id": 1
+        }
+      ],
+      "entry_point": false
+    },
+        {
+      "name": "jmeter",
+      "id": 8,
+      "kind": "Deployment",
+      "entry_point": false
+    }
+  ]
+}

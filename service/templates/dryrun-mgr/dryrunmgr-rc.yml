@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dryrun-manager
+spec:
+  template:
+    metadata:
+      name: dryrun-manager-pod
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: "myregistry"
+#      nodeSelector:
+#        name: MAIN_LOCATIONS
+      containers:
+      - name: dryrun-manager-container
+        image: autoshift/autoshift-dryrun:master
+        env:
+        - name: "API_ENDPOINT"
+          value: "http://api:9000"
+        - name: "INFLUXDB_ENDPOINT"
+          value: "influxdb.autoshift.ga:443"
+        - name: "INFLUXDB_USERNAME"
+          value: "autoshift"
+        - name: "INFLUXDB_PASSWORD"
+          value: "influx4autoshift"
+        - name: "INFLUXDB_DATABASE"
+          value: "api"
+        - name: "INFLUXDB_USE_SSL"
+          value: "True"
+        - name: "APPOPTVARS"
+          value: "{\"app_name\":\"acme-air\",\"app_id\":1,\"dryrun_mgr_id\":1,\"manual_dryrun\":false,\"load_timespan\":300,\"desired_latency\":200,\"max_errrate\":20,\"budget_mon\":200,\"locations\":[1],\"containersConfig\":{\"pxc-node1\":{\"mem_limit\":2048000000,\"cpu_quota\":100000,\"scale\":[1,2],\"locations\":[1]},\"nginx\":{\"mem_limit\":1024000000,\"cpu_quota\":100000,\"scale\":[1],\"locations\":[1]},\"web\":{\"mem_limit\":1024000000,\"cpu_quota\":100000,\"scale\":[1,2,3],\"locations\":[1]}}}"
+        ports:
+        - containerPort: 8086
+        imagePullPolicy: "Always"

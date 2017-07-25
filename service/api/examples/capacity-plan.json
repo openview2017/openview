@@ -1,0 +1,17 @@
+{
+  "id": 1,
+  "name": "plan1",
+  "is_auto": false,
+  "demand_profile_id": 1,
+  "SetConfigs": [
+    {
+      "id": 1,
+      "kind": "StatefulSet",
+      "name": "mysql",
+      "replicas": 1
+    }
+  ],
+  "phase": "COMPLETED",
+  "message": "",
+  "created": "2011-02-10T10:26:32Z"
+}

@@ -1,0 +1,14 @@
+#%RAML 0.8
+title: autoshift all-merged api for ui to display capacity plan results
+version: v1
+baseUri: http://localhost:9000/autoshift/api/v1
+mediaType: application/json
+
+
+/apps/{app_id}/demand-profiles/{demand_id}/all-merged:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/capacity-plan-all-merged.json

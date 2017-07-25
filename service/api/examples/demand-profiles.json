@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "summer 2017 promotion",
+    "description": "this is a description",
+    "config": "# yaml configuration file",
+    "config_filename": "config.yaml",
+    "config_json": "[{}]",
+    "load_duration": 300,
+    "created": "2016-12-10 02:44:15 UTC"
+  },
+  {
+    "id": 2,
+    "name": "open summit conference",
+    "description": "this is a description",
+    "load_duration": 300,
+    "config": "# yaml configuration file",
+    "config_filename": "config.yaml",
+    "config_json": "[{}]",
+    "created": "2011-01-12T10:26:32Z"
+  }
+]

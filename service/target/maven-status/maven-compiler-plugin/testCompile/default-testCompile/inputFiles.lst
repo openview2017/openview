@@ -1,0 +1,10 @@
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/domain/docker/ParserTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/KubernetesResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/domain/docker/AppBlueprintJSonUtilTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/admin/CapacityPlanResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/util/YamlTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/admin/DemandProfileResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/admin/AppResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/admin/RemediationActionResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/route/admin/LocationResourceTest.java
+/home/hzhang/git/autoshift-api/src/test/java/com/huawei/autoshift/devops/domain/docker/DBTest.java

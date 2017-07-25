@@ -1,0 +1,23 @@
+#%RAML 0.8
+title: autoshift misc api
+version: v1
+baseUri: http://localhost:9000/autoshift/api/v1
+mediaType: application/json
+
+schemas:
+  - location: !include schemas/location.json
+  - locations: !include schemas/locations.json
+
+resourceTypes:
+  - collection: !include resourcetypes/collection.raml
+  - collection-item: !include resourcetypes/collection-item.raml
+
+/locations:
+  type:
+    collection:
+      exampleCollection: !include examples/locations.json
+      exampleItem: !include examples/location-new.json
+  /{id}:
+    type:
+       collection-item:
+         exampleItem: !include examples/location.json

@@ -1,0 +1,276 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dockerhub.registry
+data:
+  .dockerconfigjson: eyAiYXV0aHMiOiB7ICJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7ICJhdXRoIjogIlltbHNiSGw2YUdGdVp6SXdNVEE2U0ZkNmFEZ3lPREl4UUE9PSIgfSB9IH0K
+type: kubernetes.io/dockerconfigjson
+---
+# A headless service to create DNS records
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: db
+  namespace: "acmeair"
+  labels:
+    app: mysql
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  # *.galear.default.svc.cluster.local
+  clusterIP: None
+  selector:
+    app: mysql
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: "acmeair"
+spec:
+  serviceName: "db"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mysql
+      annotations:
+        pod.alpha.kubernetes.io/init-containers: '[
+            {
+                "name": "install",
+                "image": "jianhuiz/galera-install:0.1",
+                "args": ["--work-dir=/work-dir"],
+                "volumeMounts": [
+                    {
+                        "name": "workdir",
+                        "mountPath": "/work-dir"
+                    },
+                    {
+                        "name": "config",
+                        "mountPath": "/etc/mysql"
+                    }
+                ]
+            },
+            {
+                "name": "bootstrap",
+                "image": "debian:jessie",
+                "command": ["/work-dir/peer-finder"],
+                "args": ["-on-start=\"/work-dir/on-start.sh\"", "-service=db"],
+                "env": [
+                  {
+                      "name": "POD_NAMESPACE",
+                      "valueFrom": {
+                          "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                          }
+                      }
+                   }
+                ],
+                "volumeMounts": [
+                    {
+                        "name": "workdir",
+                        "mountPath": "/work-dir"
+                    },
+                    {
+                        "name": "config",
+                        "mountPath": "/etc/mysql"
+                    }
+                ]
+            }
+        ]'
+    spec:
+      nodeSelector:
+        stack: acmeair
+      containers:
+      - name: mysql
+        image: jianhuiz/mysql-galera:e2e
+        ports:
+        - containerPort: 3306
+          name: mysql
+        - containerPort: 4444
+          name: sst
+        - containerPort: 4567
+          name: replication
+        - containerPort: 4568
+          name: ist
+        args:
+        - --defaults-file=/etc/mysql/my-galera.cnf
+        - --user=root
+        readinessProbe:
+          # TODO: If docker exec is buggy just use gcr.io/google_containers/mysql-healthz:1.0
+          exec:
+            command:
+            - sh
+            - -c
+            - "mysql -u root -e 'show databases;'"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          successThreshold: 2
+        volumeMounts:
+        - name: datadir
+          mountPath: /var/lib/
+        - name: config
+          mountPath: /etc/mysql
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: workdir
+        emptyDir: {}
+      - name: datadir
+        emptyDir: {}
+  # volumeClaimTemplates:
+  # - metadata:
+  #     name: datadir
+  #     #annotations:
+  #     #  volume.beta.kubernetes.io/storage-class: example-nfs
+  #   spec:
+  #     accessModes: [ "ReadWriteOnce" ]
+  #     resources:
+  #       requests:
+  #         storage: 1Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: acmeairdbloader
+  namespace: "acmeair"
+spec:
+  template:
+    metadata:
+      name: acmeair-dbloader
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: "dockerhub.registry"
+      nodeSelector:
+        stack: acmeair
+      containers:
+      - name: acmeair-dbloader
+        image: autoshift/mysql-loader:0.3
+        env:
+          - name: MYSQL_PORT_3306_TCP_ADDR
+            value: db
+          - name: MYSQL_ENV_MYSQL_ROOT_PASSWORD
+            value: root
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acmeairapp
+  namespace: "acmeair"
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    name: webpods
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: webrc
+  namespace: "acmeair"
+spec:
+  replicas: 1
+  selector:
+    name: webpods
+  template:
+    metadata:
+      labels:
+        name: webpods
+        tier: frontend
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: "dockerhub.registry"
+      nodeSelector:
+        stack: acmeair
+      # nodeSelector:
+      #   eip : unbonded
+      #   region: cn-north-1
+      #   provider: hwcloud
+      #   stack: app1_dryrun
+      containers:
+      - image: autoshift/apps_acmeair:latest
+        name: web
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: "acmeair"
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30180
+    protocol: TCP
+    name: nginx0
+  selector:
+    name: nginxpo
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginxrc
+  namespace: "acmeair"
+spec:
+  replicas: 1
+  selector:
+    name: nginxpo
+  template:
+    metadata:
+      labels:
+        name: nginxpo
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: "dockerhub.registry"
+      nodeSelector:
+        stack: acmeair
+      # nodeSelector:
+      #   eip : bonded
+      #   region: cn-north-1
+      #   provider: hwcloud
+      #   stack: app1_dryrun
+      containers:
+      - name: nginx
+        image: zhaohc10/webaccess-analyzer:0.2
+        env:
+        - name: "BACKEND_SVC_IP"
+          value: "acmeairapp"
+        - name: "BACKEND_SVC_PORT"
+          value: "8080"
+        - name: "INFLUXDB_URL"
+          #value: "https://influxdb.autoshift.us"
+          value: "http://influxdb.default:8086"
+        - name: "INFLUXDB_AUTH"
+          value: "autoshift:influx4autoshift"
+        - name: "KAFKA_BOOTSTRAP_SERVERS"
+          value: "kafka.default.svc.cluster.local:9092"
+        - name: "APP_NAME"
+          value: "acmeair-"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /var/log/nginx/
+          name: nginxdata
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+      volumes:
+        - name: nginxdata
+          hostPath:
+            path: /var/nginx-out/log/

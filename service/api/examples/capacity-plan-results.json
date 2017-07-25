@@ -1,0 +1,240 @@
+{
+  "status": "COMPLETED",
+  "message": "成功验证3个符合要求的配置",
+  "results": [
+    {
+      "id": "140",
+      "location_id": 1,
+      "load_duration": 300,
+      "sla_status": "SLA_OPTIMIZED",
+      "sla_result": {
+        "latency": 120,
+        "error_rate": 0.01,
+        "cost": 120,
+        "currency_type": "yuan"
+      },
+      "SetConfigs": [
+        {
+          "name": "mysql-set",
+          "id": 1,
+          "kind": "StatefulSet",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "mysql": {
+                "mem_limit": 2048000000,
+                "cpu_quota": 100000
+              },
+              "mysql-forwarder": {
+                "mem_limit": 512000000,
+                "cpu_quota": 50000
+              }
+            }
+          }
+        },
+        {
+          "name": "nginx",
+          "id": 2,
+          "kind": "replicationController",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "nginx": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web",
+          "id": 3,
+          "kind": "replicationController",
+          "replicas": 2,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web-debug",
+          "id": 4,
+          "kind": "pod",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "141",
+      "load_duration": 300,
+      "location_id": 1,
+      "sla_status": "SLA_OPTIMIZED",
+      "sla_result": {
+        "latency": 120,
+        "error_rate": 0.01,
+        "cost": 120,
+        "currency_type": "yuan"
+      },
+      "SetConfigs": [
+        {
+          "name": "mysql-set",
+          "id": 1,
+          "kind": "StatefulSet",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "mysql": {
+                "mem_limit": 2048000000,
+                "cpu_quota": 100000
+              },
+              "mysql-forwarder": {
+                "mem_limit": 512000000,
+                "cpu_quota": 50000
+              }
+            }
+          }
+        },
+        {
+          "name": "nginx",
+          "id": 2,
+          "kind": "replicationController",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "nginx": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web",
+          "id": 3,
+          "kind": "replicationController",
+          "replicas": 2,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web-debug",
+          "id": 4,
+          "kind": "pod",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "142",
+      "load_duration": 300,
+      "location_id": 1,
+      "sla_status": "SLA_OPTIMIZED",
+      "sla_result": {
+        "latency": 120,
+        "error_rate": 0.01,
+        "cost": 120,
+        "currency_type": "yuan"
+      },
+      "SetConfigs": [
+        {
+          "name": "mysql-set",
+          "id": 1,
+          "kind": "StatefulSet",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "mysql": {
+                "mem_limit": 2048000000,
+                "cpu_quota": 100000
+              },
+              "mysql-forwarder": {
+                "mem_limit": 512000000,
+                "cpu_quota": 50000
+              }
+            }
+          }
+        },
+        {
+          "name": "nginx",
+          "id": 2,
+          "kind": "replicationController",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "nginx": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web",
+          "id": 3,
+          "kind": "replicationController",
+          "replicas": 2,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        },
+        {
+          "name": "web-debug",
+          "id": 4,
+          "kind": "pod",
+          "replicas": 1,
+          "podConfig": {
+            "node_location_id": 1,
+            "containersConfig": {
+              "web": {
+                "mem_limit": 1024000000,
+                "cpu_quota": 100000
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

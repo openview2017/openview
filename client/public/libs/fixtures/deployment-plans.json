@@ -1,0 +1,257 @@
+{
+  "id": 8,
+  "locations": [
+    {
+      "id": 1,
+      "name": "Huawei Cloud CN-North-1 (Langfang)"
+    },
+    {
+      "id": 2,
+      "name": "Huawei Cloud CN-East-1 (Yangzhou)"
+    },
+    {
+      "id": 3,
+      "name": "Aliyun CN-North-1 (Qingdao)"
+    },
+    { 
+      "id": 4,
+      "name": "Aliyun CN-East-1 (Hangzhou)"
+    },
+    {
+      "id": 5,
+      "name": "Amazon US-West (Oregon)"
+    },
+    {
+      "id": 6,
+      "name": "Amazon Europe (Frankfurt)"
+    }
+  ],
+  "services": [
+    {
+      "selector": "nginx",
+      "display_name": "Nginx",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    },
+    {
+      "selector": "web",
+      "display_name": "Web",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    },
+    {
+      "selector": "mysql",
+      "display_name": "MySQL",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    }
+  ],
+  "manual_plans": [
+    {
+      "id": "dryrun1434",
+      "status": "success",
+      "status_message": "延迟过大",
+      "deployment_location": 1,
+      "service_configs": {
+        "nginx": {
+          "cpu_quota": 1,
+          "mem_limit": 2048,
+          "scale": 1
+        },
+        "web": {
+          "cpu_quota": 1.5,
+          "mem_limit": 1024,
+          "scale": 3
+        },
+        "mysql": {
+          "cpu_quota": 1.5,
+          "mem_limit": 1024,
+          "scale": 1
+        }
+      },
+      "dry_run_result": {
+        "error_rates": 3.92,
+        "latency": 939.58,
+        "cost": 370.8
+      }
+    },
+    {
+      "id": "dryrun1435",
+      "status": "success",
+      "status_message": "错误率过高",
+      "deployment_location": 1,
+      "service_configs": {
+        "mysql": {
+          "mem_limit": 3584,
+          "cpu_quota": 0.5,
+          "scale": 1
+        },
+        "nginx": {
+          "mem_limit": 768,
+          "cpu_quota": 1.75,
+          "scale": 1
+        },
+        "web": {
+          "mem_limit": 1792,
+          "cpu_quota": 0.75,
+          "scale": 2
+        }
+      },
+      "dry_run_result": {
+        "error_rates": 27.02,
+        "latency": 11201.36,
+        "cost": 468.46
+      }
+    },
+    {
+      "id": "dryrun1436",
+      "status": "success",
+      "status_message": "延迟过大",
+      "deployment_location": 1,
+      "service_configs": {
+        "mysql": {
+          "mem_limit": 3072,
+          "cpu_quota": 1,
+          "scale": 1
+        },
+        "nginx": {
+          "mem_limit": 768,
+          "cpu_quota": 1.75,
+          "scale": 1
+        },
+        "web": {
+          "mem_limit": 1536,
+          "cpu_quota": 1.25,
+          "scale": 1
+        }
+      },
+      "dry_run_result": {
+        "error_rates": 0,
+        "latency": 285.78,
+        "cost": 320.8
+      }
+    },
+    {
+      "status": "failed",
+      "status_message": "启动失败",
+      "deployment_location": 1,
+      "service_configs": {
+        "mysql": {
+          "mem_limit": 3072,
+          "cpu_quota": 1,
+          "scale": 3
+        },
+        "nginx": {
+          "mem_limit": 768,
+          "cpu_quota": 1.75,
+          "scale": 1
+        },
+        "web": {
+          "mem_limit": 1536,
+          "cpu_quota": 1.25,
+          "scale": 1
+        }
+      },
+      "dry_run_result": {}
+    }
+  ],
+  "auto_plans": {
+    "status": "success",
+    "status_message": "成功验证3个符合要求的配置",
+    "deployment_location": 1,
+    "recommendations": [
+      {
+        "id": "dryrun140",
+        "status": "success",
+        "status_message": "符合要求",
+        "deployment_location": 1,
+        "service_configs": {
+          "mysql": {
+            "mem_limit": 1024,
+            "cpu_quota": 0.5,
+            "scale": 1
+          },
+          "nginx": {
+            "mem_limit": 512,
+            "cpu_quota": 0.5,
+            "scale": 1
+          },
+          "web": {
+            "mem_limit": 2048,
+            "cpu_quota": 2,
+            "scale": 3
+          }
+        },
+        "dry_run_result": {
+          "error_rates": 0,
+          "latency": 63.32,
+          "cost": 461.5
+        }
+      },
+      {
+        "id": "dryrun141",
+        "status": "success",
+        "status_message": "符合要求",
+        "deployment_location": 1,
+        "service_configs": {
+          "mysql": {
+            "mem_limit": 1536,
+            "cpu_quota": 0.5,
+            "scale": 1
+          },
+          "nginx": {
+            "mem_limit": 1280,
+            "cpu_quota": 2,
+            "scale": 1
+          },
+          "web": {
+            "mem_limit": 1536,
+            "cpu_quota": 1.5,
+            "scale": 1
+          }
+        },
+        "dry_run_result": {
+          "error_rates": 0.22,
+          "latency": 102.11,
+          "cost": 261.6
+        }
+      }
+    ]
+  }
+}

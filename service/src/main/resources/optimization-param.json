@@ -1,0 +1,28 @@
+{"app_GUID":"acme-air",
+    "load_timespan":300,
+    "desired_latency":100.0,
+    "max_errrate":55.0,
+    "budget_mon":300.0,
+    "location_size":1,
+    "tiers": [
+        {
+            "mysql": {
+                "mem_limit":[1024000000,4096000000,6],
+                "cpu_quota":[50000,200000,6]
+            }
+        },
+	    {
+	        "nginx": {
+	            "mem_limit":[512000000,2048000000,6],
+	            "cpu_quota":[50000,200000,6]
+	        }
+	    },
+	    {
+	        "unknown_webserver":{ 
+	            "mem_limit":[512000000,4096000000,7],
+	            "cpu_quota":[50000,200000,6],
+	            "scale":[1,5,4]
+	        }
+	    }
+    ]
+}

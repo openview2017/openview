@@ -1,0 +1,7 @@
+{
+  "name": "this is a test location",
+  "latitude": 39.54,
+  "longitude": 116.68,
+  "selector": "region=cn-north-1,provider=hwcloud",
+  "size_limit": "2"
+}

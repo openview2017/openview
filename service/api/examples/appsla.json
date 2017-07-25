@@ -1,0 +1,6 @@
+{
+  "cost": 3000,
+  "currency_type": "yuan",
+  "latency": 20,
+  "error_rate": 20
+}

@@ -1,0 +1,146 @@
+{
+  "id": 8,
+  "locations": [
+    {
+      "id": 1,
+      "name": "Huawei Cloud CN-North-1 (Langfang)"
+    },
+    {
+      "id": 2,
+      "name": "Huawei Cloud CN-East-1 (Yangzhou)"
+    },
+    {
+      "id": 3,
+      "name": "Aliyun CN-North-1 (Qingdao)"
+    },
+    {
+      "id": 4,
+      "name": "Aliyun CN-East-1 (Hangzhou)"
+    },
+    {
+      "id": 5,
+      "name": "Amazon US-West (Oregon)"
+    },
+    {
+      "id": 6,
+      "name": "Amazon Europe (Frankfurt)"
+    }
+  ],
+  "services": [
+    {
+      "selector": "nginx",
+      "display_name": "Nginx",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    },
+    {
+      "selector": "web",
+      "display_name": "Web",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    },
+    {
+      "selector": "mysql",
+      "display_name": "MySQL",
+      "attributes": [
+        {
+          "selector": "cpu_quota",
+          "display_name": "CPU Cores"
+        },
+        {
+          "selector": "mem_limit",
+          "display_name": "Memory Limit (MB)"
+        },
+        {
+          "selector": "scale",
+          "display_name": "Instances"
+        }
+      ]
+    }
+  ],
+  "manual_plans": [
+    {
+      "id": "dryrun1434",
+      "status": "ready to status",
+      "status_message": "",
+      "deployment_location": 1,
+      "service_configs": {
+        "nginx": {
+          "cpu_quota": 1,
+          "mem_limit": 1024,
+          "scale": 1
+        },
+        "web": {
+          "cpu_quota": 1,
+          "mem_limit": 1024,
+          "scale": 1
+        },
+        "mysql": {
+          "cpu_quota": 1,
+          "mem_limit": 2048,
+          "scale": 1
+        }
+      },
+      "dry_run_result": {}
+    }
+  ],
+  "auto_plans": {
+    "status": "ready to start",
+    "status_message": "",
+    "deployment_location": 1,
+    "recommendations": [
+      {
+        "id": "dryrun140",
+        "status": "ready to start",
+        "status_message": "",
+        "deployment_location": 1,
+        "service_configs": {
+          "mysql": {
+            "mem_limit": 2048,
+            "cpu_quota": 1,
+            "scale": 1
+          },
+          "nginx": {
+            "mem_limit": 1024,
+            "cpu_quota": 1,
+            "scale": 1
+          },
+          "web": {
+            "mem_limit": 1024,
+            "cpu_quota": 1,
+            "scale": 1
+          }
+        },
+        "dry_run_result": {
+          "error_rates": 0,
+          "latency": 0,
+          "cost": 0
+        }
+      }
+    ]
+  }
+}

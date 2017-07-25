@@ -1,0 +1,29 @@
+db:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    io.rancher.container.pull_image: always
+  image: mysql:5
+  ports:
+    - 3306
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+  volumes:
+    - /var/lib/mysql:/var/lib/mysql
+  mem_limit: DB_MEM_LIMIT
+  cpu_quota: DB_CPU_QUOTA
+
+
+acmeair:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=apps,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: always
+  image: openview/apps_acmeair
+  links:
+    - db
+  mem_limit: WEBSERVER_MEM_LIMIT
+  cpu_quota: WEBSERVER_CPU_QUOTA

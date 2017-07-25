@@ -1,0 +1,13 @@
+{
+  "name": "plan1",
+  "is_auto": false,
+  "demand_profile_id": 1,
+  "SetConfigs": [
+    {
+      "id": 1,
+      "kind": "StatefulSet",
+      "name": "mysql",
+      "replicas": 1
+    }
+  ]
+}

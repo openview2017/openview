@@ -1,0 +1,43 @@
+nginx:
+  scale: 1
+acmeair:
+  scale: 1
+
+mariadb-galera-server:
+  scale: 3
+ 
+galera-lb:
+  scale: 1
+  health_check:
+    port: 42
+    interval: 2000
+    unhealthy_threshold: 1
+    strategy: recreate
+    response_timeout: 2000
+    healthy_threshold: 2
+
+mariadb-galera-data:
+  scale: 3
+      
+galera:
+  scale: 3
+  metadata:
+    mysqld: |
+      innodb_file_per_table = 1
+      innodb_autoinc_lock_mode=2
+      query_cache_size=0
+      query_cache_type=0
+      innodb_flush_log_at_trx_commit=0
+      binlog_format=ROW
+      default-storage-engine=innodb
+      wsrep_provider=/usr/lib/galera/libgalera_smm.so
+      wsrep_provider_options="gcache.size = 2G"
+      wsrep_sst_method=mysqldump
+      wsrep_sst_auth=root:root
+      progress=1
+      wait_timeout=120000
+      
+telegraf:
+  scale: 1
+jmeter:
+  scale: 1

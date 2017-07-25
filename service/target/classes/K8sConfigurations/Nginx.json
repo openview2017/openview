@@ -1,0 +1,82 @@
+[{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "name": "nginx"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 80,
+          "targetPort": 80,
+          "protocol": "TCP",
+          "name": "nginx0"
+        }
+      ],
+      "selector": {
+        "name": "nginxpo",
+        "component": "autoshift-owned"
+      }
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "ReplicationController",
+    "metadata": {
+      "name": "nginx"
+    },
+    "spec": {
+      "replicas": 1,
+      "template": {
+        "metadata": {
+          "labels": {
+            "name": "nginxpo",
+            "component": "autoshift-owned"
+          }
+        },
+        "spec": {
+          "restartPolicy": "Always",
+          "nodeSelector": {
+            "stack": "dryrun"
+          },
+          "containers": [
+            {
+              "name": "nginx",
+              "image": "10.119.63.231:5002/autoshift/webaccess-analyzer:0.4",
+              "env": [{
+                  "name": "NAMESPACE",
+                  "valueFrom": {
+                    "fieldRef": {
+                      "fieldPath": "metadata.namespace"
+                    }
+                  }
+                }
+              ],
+              "volumeMounts": [
+                {
+                  "mountPath": "/var/log/nginx/",
+                  "name": "nginxdata"
+                }
+              ],
+              "imagePullPolicy": "Always",
+              "ports": [
+                {
+                  "containerPort": 80
+                },
+                {
+                  "containerPort": 443
+                }
+              ]
+            }
+          ],
+          "volumes": [
+            {
+              "name": "nginxdata",
+              "emptyDir": {}
+            }
+          ]
+        }
+      }
+    }
+  }
+]

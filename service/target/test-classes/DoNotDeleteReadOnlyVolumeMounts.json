@@ -1,0 +1,86 @@
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "telegraf-node1"
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "name": "telegraf-pod1"
+    },
+    "template": {
+      "metadata": {
+        "name": "telegraf-pod1",
+        "labels": {
+          "name": "telegraf-pod1"
+        }
+      },
+      "spec": {
+        "restartPolicy": "Always",
+        "imagePullSecrets": [
+          {
+            "name": "myregistry"
+          }
+        ],
+        "nodeSelector": {
+          "name": "autoshift-demo-node-1"
+        },
+        "containers": [
+          {
+            "name": "telegraf",
+            "image": "117.78.33.214/autoshift/telegraf:latest",
+            "env": [
+              {
+                "name": "HOST_PROC",
+                "value": "/rootfs/proc"
+              },
+              {
+                "name": "HOST_SYS",
+                "value": "/rootfs/sys"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "mountPath": "/rootfs/sys",
+                "name": "sys",
+                "readOnly": false
+              },
+              {
+                "mountPath": "/rootfs/proc",
+                "name": "proc",
+                "readOnly": true
+              },
+              {
+                "mountPath": "/var/run/docker.sock",
+                "name": "docker",
+                "readOnly": true
+              }
+            ],
+            "imagePullPolicy": "Always"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "sys",
+            "hostPath": {
+              "path": "/sys"
+            }
+          },
+          {
+            "name": "proc",
+            "hostPath": {
+              "path": "/proc"
+            }
+          },
+          {
+            "name": "docker",
+            "hostPath": {
+              "path": "/var/run/docker.sock"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

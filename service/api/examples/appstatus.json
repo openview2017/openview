@@ -1,0 +1,6 @@
+{
+  "phase": "launched",
+  "service_count": 3,
+  "pod_count": 3,
+  "container_count": 6
+}

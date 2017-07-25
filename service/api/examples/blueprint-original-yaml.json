@@ -1,0 +1,1 @@
+"--- \napiVersion: v1\nkind: Service\nmetadata: \n  name: db\nspec: \n  name: mysql\n  ports: \n    - \n      port: 3306\n  selector: \n    app: mysql\n"

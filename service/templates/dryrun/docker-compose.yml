@@ -1,0 +1,166 @@
+# the dryrun stack
+# galera-leader-forwarder:
+#   restart: on-failure:3
+#   labels:
+#     io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+#     io.rancher.scheduler.affinity:container_label_soft_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+#   image: rancher/galera-leader-proxy:v0.1.0
+#   volumes_from:
+#   - mariadb-galera-data
+#   net: container:galera
+
+galera-lb:
+  restart: on-failure:3
+  expose:
+  - 3306:3306/tcp
+  tty: true
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+  image: rancher/load-balancer-service
+  links:
+  - galera:galera
+  stdin_open: true
+  
+mariadb-galera-server:
+  restart: on-failure:3
+  environment:
+    MYSQL_DATABASE: acmeair
+    MYSQL_PASSWORD: acmeair
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_USER: acmeair
+    TERM: xterm
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.scheduler.affinity:container_label_soft_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.hostname_override: container_name
+  entrypoint:
+  - bash
+  - -x
+  - /opt/rancher/start_galera
+  image: rancher/galera:10.0.22-rancher2
+  volumes_from:
+  - mariadb-galera-data
+  net: container:galera
+  mem_limit: DB_MEM_LIMIT
+  cpu_quota: DB_CPU_QUOTA
+  
+mariadb-galera-data:
+  environment:
+    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.scheduler.affinity:container_label_soft_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.start_once: 'true'
+  command:
+  - /bin/true
+  image: rancher/galera:10.0.22-rancher2
+  volumes:
+  - /docker-entrypoint-initdb.d
+  - /etc/mysql/conf.d
+  - /opt/rancher
+  # - /var/lib/mysql
+  net: none
+  
+galera:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.sidekicks: mariadb-galera-data,mariadb-galera-server #,galera-leader-forwarder
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.hostname_override: container_name
+  command:
+  - /bin/bash
+  tty: true
+  image: rancher/galera-conf:v0.2.0
+  volumes_from:
+  - mariadb-galera-data
+  stdin_open: true  
+
+acmeair:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: false
+  image: autoshift/apps_acmeair
+  links:
+    - galera-lb:db
+  mem_limit: WEBSERVER_MEM_LIMIT
+  cpu_quota: WEBSERVER_CPU_QUOTA
+  
+
+nginx:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+    io.rancher.container.pull_image: always
+  image: autoshift/nginx-log-parser:master
+  links:
+    - acmeair:app
+  external_links:
+    - devops/influxdb:influxdb
+    - devops/kafka:kafka
+  environment:
+    - APP_NAME=APP-NAME-PLACEHOLDER
+  ports:
+    - 80
+  mem_limit: LOADBALANCER_MEM_LIMIT
+  cpu_quota: LOADBALANCER_CPU_QUOTA
+  
+
+# telegraf:
+#   restart: on-failure:3
+#   labels:
+#     io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+#     io.rancher.scheduler.affinity:container_label_ne: io.rancher.stack_service.name=$${stack_name}/$${service_name}
+#     io.rancher.container.hostname_override: container_name
+#     #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/db
+#     io.rancher.container.pull_image: false
+#   image: autoshift/devops_telegraf:dryrun-0.12
+#   links:
+#     - nginx
+#     - galera-lb:db
+#   external_links:
+#     - devops/kafka:kafka
+#     - devops/influxdb:influxdb
+#   environment:
+#     HOST_PROC: /rootfs/proc
+#     HOST_SYS: /rootfs/sys
+#   volumes:
+#     - "/sys:/rootfs/sys:ro"
+#     - "/proc:/rootfs/proc:ro"
+#     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+
+jmeter:
+  restart: on-failure:3
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=jmeter,region=us-west,provider=aws
+    io.rancher.container.hostname_override: container_name
+    #io.rancher.scheduler.affinity:container_label_soft: io.rancher.stack_service.name=APP-NAME-PLACEHOLDER/nginx
+    io.rancher.container.pull_image: always
+  image: "autoshift/jmeter-simple:0.1"
+  links:
+    - nginx
+  environment:
+    LOADNAME: acmeair-random-load
+    REQSEC: 150
+    NUSER: 40
+
+  
+dbloader:
+  restart: 'no'
+  image: autoshift/apps_dbloader:latest
+  labels:
+    io.rancher.scheduler.affinity:host_label: stack=dryrun,CLOUDPROVIDERSELECTOR
+    io.rancher.container.hostname_override: container_name
+    io.rancher.container.start_once: true
+    io.rancher.container.pull_image: always
+  environment:
+    DATANAME: 'acmeair-23640flights.sql'
+  links:
+    - galera:db

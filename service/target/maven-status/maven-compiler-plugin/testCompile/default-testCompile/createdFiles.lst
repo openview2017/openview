@@ -1,0 +1,9 @@
+com/huawei/autoshift/devops/route/admin/DemandProfileResourceTest.class
+com/huawei/autoshift/devops/route/admin/RemediationActionResourceTest.class
+com/huawei/autoshift/devops/route/admin/LocationResourceTest.class
+com/huawei/autoshift/devops/route/admin/CapacityPlanResourceTest.class
+com/huawei/autoshift/devops/route/KubernetesResourceTest.class
+com/huawei/autoshift/devops/route/admin/AppResourceTest.class
+com/huawei/autoshift/devops/util/YamlTest.class
+com/huawei/autoshift/devops/domain/docker/ParserTest.class
+com/huawei/autoshift/devops/domain/docker/DBTest.class
